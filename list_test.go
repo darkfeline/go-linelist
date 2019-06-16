@@ -16,6 +16,7 @@ package linelist
 
 import (
 	"bytes"
+	"fmt"
 	"reflect"
 	"strings"
 	"testing"
@@ -130,4 +131,35 @@ func TestList_Keep_side_effect_free(t *testing.T) {
 	if !reflect.DeepEqual(ls, exp) {
 		t.Errorf("List was modified from %#v to %#v", exp, ls)
 	}
+}
+
+func ExampleList_Exclude() {
+	a := List{"foo", "bar"}
+	b := List{"bar", "baz"}
+	fmt.Print(a.Exclude(b))
+	// Output:
+	// [foo]
+}
+
+func ExampleList_Keep() {
+	a := List{"foo", "bar"}
+	b := List{"bar", "baz"}
+	fmt.Print(a.Keep(b))
+	// Output:
+	// [bar]
+}
+
+func ExampleList_Sort() {
+	a := List{"foo", "bar"}
+	a.Sort()
+	fmt.Print(a)
+	// Output:
+	// [bar foo]
+}
+
+func ExampleList_Unique() {
+	a := List{"foo", "bar", "foo"}
+	fmt.Print(a.Unique())
+	// Output:
+	// [foo bar]
 }
