@@ -70,8 +70,13 @@ func (s *Store) Open(path string) *List {
 	}
 	f, err := os.Open(path)
 	if err != nil {
-		s.err = err
-		return nil
+		if !os.IsNotExist(err) {
+			s.err = xerrors.Errorf("linelist: open %v: %w", path, err)
+			return nil
+		}
+		var ls List
+		s.trackList(path, &ls)
+		return &ls
 	}
 	defer f.Close()
 	ls, err := Load(f)
