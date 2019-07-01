@@ -119,6 +119,8 @@ func (s *Store) flushOne(t trackedList) error {
 	if err := f.Close(); err != nil {
 		return xerrors.Errorf("linelist: flush list %v: %w", t.path, err)
 	}
-	os.Rename(f.Name(), t.path)
+	if err := os.Rename(f.Name(), t.path); err != nil {
+		return xerrors.Errorf("linelist: flush list %v: %w", t.path, err)
+	}
 	return nil
 }
