@@ -19,6 +19,8 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	"golang.org/x/xerrors"
 )
 
 // Store opens lists and tracks them so they can be written back.
@@ -74,7 +76,7 @@ func (s *Store) Open(path string) *List {
 	defer f.Close()
 	ls, err := Load(f)
 	if err != nil {
-		s.err = err
+		s.err = xerrors.Errorf("linelist: open %v: %w", path, err)
 		return nil
 	}
 	s.trackList(path, &ls)
@@ -112,10 +114,10 @@ func (s *Store) flushOne(t trackedList) error {
 	bw := bufio.NewWriter(f)
 	t.ls.WriteTo(bw)
 	if err := bw.Flush(); err != nil {
-		return err
+		return xerrors.Errorf("linelist: flush list %v: %w", t.path, err)
 	}
 	if err := f.Close(); err != nil {
-		return err
+		return xerrors.Errorf("linelist: flush list %v: %w", t.path, err)
 	}
 	os.Rename(f.Name(), t.path)
 	return nil
