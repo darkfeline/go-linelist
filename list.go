@@ -24,6 +24,8 @@ import (
 	"bufio"
 	"io"
 	"sort"
+
+	"golang.org/x/xerrors"
 )
 
 // List is a list of lines of text.
@@ -37,7 +39,7 @@ func Load(r io.Reader) (List, error) {
 		ls = append(ls, s.Text())
 	}
 	if err := s.Err(); err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("linelist: load: %w", err)
 	}
 	return ls, nil
 }
@@ -51,7 +53,11 @@ func (ls List) WriteTo(w io.Writer) (n int64, err error) {
 		n2, _ = bw.Write([]byte{'\n'})
 		n += int64(n2)
 	}
-	return n, bw.Flush()
+	err = bw.Flush()
+	if err != nil {
+		err = xerrors.Errorf("linelist: write: %w", err)
+	}
+	return n, err
 }
 
 // lineSet returns a set of the lines in the list.
