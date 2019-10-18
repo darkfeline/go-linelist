@@ -33,21 +33,21 @@ type List []string
 
 // Load loads a line list from a reader.
 func Load(r io.Reader) (List, error) {
-	var ls List
+	var l List
 	s := bufio.NewScanner(r)
 	for s.Scan() {
-		ls = append(ls, s.Text())
+		l = append(l, s.Text())
 	}
 	if err := s.Err(); err != nil {
 		return nil, xerrors.Errorf("linelist: load: %w", err)
 	}
-	return ls, nil
+	return l, nil
 }
 
 // WriteTo implements io.WriterTo.
-func (ls List) WriteTo(w io.Writer) (n int64, err error) {
+func (l List) WriteTo(w io.Writer) (n int64, err error) {
 	bw := bufio.NewWriter(w)
-	for _, s := range ls {
+	for _, s := range l {
 		n2, _ := io.WriteString(bw, s)
 		n += int64(n2)
 		n2, _ = bw.Write([]byte{'\n'})
@@ -61,19 +61,19 @@ func (ls List) WriteTo(w io.Writer) (n int64, err error) {
 }
 
 // lineSet returns a set of the lines in the list.
-func (ls List) lineSet() map[string]bool {
+func (l List) lineSet() map[string]bool {
 	m := make(map[string]bool)
-	for _, line := range ls {
+	for _, line := range l {
 		m[line] = true
 	}
 	return m
 }
 
 // Exclude returns a list excluding the lines in the argument list.
-func (ls List) Exclude(a List) List {
+func (l List) Exclude(a List) List {
 	m := a.lineSet()
-	result := make(List, 0, len(ls))
-	for _, a := range ls {
+	result := make(List, 0, len(l))
+	for _, a := range l {
 		if !m[a] {
 			result = append(result, a)
 		}
@@ -82,10 +82,10 @@ func (ls List) Exclude(a List) List {
 }
 
 // Keep returns a list keeping only the lines in the argument.
-func (ls List) Keep(a List) List {
+func (l List) Keep(a List) List {
 	m := a.lineSet()
-	result := make(List, 0, len(ls))
-	for _, a := range ls {
+	result := make(List, 0, len(l))
+	for _, a := range l {
 		if m[a] {
 			result = append(result, a)
 		}
@@ -94,10 +94,10 @@ func (ls List) Keep(a List) List {
 }
 
 // Unique returns a list with only unique lines, preserving order.
-func (ls List) Unique() List {
+func (l List) Unique() List {
 	m := make(map[string]bool)
-	result := make(List, 0, len(ls))
-	for _, line := range ls {
+	result := make(List, 0, len(l))
+	for _, line := range l {
 		if !m[line] {
 			result = append(result, line)
 			m[line] = true
@@ -107,6 +107,6 @@ func (ls List) Unique() List {
 }
 
 // Sort sorts the list in place.
-func (ls List) Sort() {
-	sort.Strings(ls)
+func (l List) Sort() {
+	sort.Strings(l)
 }
