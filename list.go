@@ -59,34 +59,42 @@ func (l List) WriteTo(w io.Writer) (n int64, err error) {
 	return n, err
 }
 
-// lineSet returns a set of the lines in the list.
-func (l List) lineSet() map[string]bool {
-	m := make(map[string]bool)
+// Set returns a set of the lines in the list.
+func (l List) Set() Set {
+	s := make(Set, len(l))
 	for _, line := range l {
-		m[line] = true
+		s[line] = struct{}{}
 	}
-	return m
+	return s
 }
 
 // Exclude returns a list excluding the lines in the argument list.
 func (l List) Exclude(a List) List {
-	m := a.lineSet()
+	return l.ExcludeSet(a.Set())
+}
+
+// ExcludeSet returns a list excluding the lines in the argument set.
+func (l List) ExcludeSet(s Set) List {
 	result := make(List, 0, len(l))
-	for _, a := range l {
-		if !m[a] {
-			result = append(result, a)
+	for _, line := range l {
+		if !s.Contains(line) {
+			result = append(result, line)
 		}
 	}
 	return result
 }
 
-// Keep returns a list keeping only the lines in the argument.
+// Keep returns a list keeping only the lines in the argument list.
 func (l List) Keep(a List) List {
-	m := a.lineSet()
+	return l.KeepSet(a.Set())
+}
+
+// KeepSet returns a list keeping only the lines in the argument set.
+func (l List) KeepSet(s Set) List {
 	result := make(List, 0, len(l))
-	for _, a := range l {
-		if m[a] {
-			result = append(result, a)
+	for _, line := range l {
+		if s.Contains(line) {
+			result = append(result, line)
 		}
 	}
 	return result
