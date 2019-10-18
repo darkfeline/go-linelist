@@ -63,7 +63,7 @@ func (l List) WriteTo(w io.Writer) (n int64, err error) {
 func (l List) Set() Set {
 	s := make(Set, len(l))
 	for _, line := range l {
-		s[line] = struct{}{}
+		s.Add(line)
 	}
 	return s
 }

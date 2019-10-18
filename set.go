@@ -31,3 +31,8 @@ func (s Set) Contains(l string) bool {
 	_, ok := s[l]
 	return ok
 }
+
+// Add adds a line to the set.
+func (s Set) Add(l string) {
+	s[l] = struct{}{}
+}
