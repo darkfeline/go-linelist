@@ -22,10 +22,9 @@ package linelist
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"sort"
-
-	"golang.org/x/xerrors"
 )
 
 // List is a list of lines of text.
@@ -39,7 +38,7 @@ func Load(r io.Reader) (List, error) {
 		l = append(l, s.Text())
 	}
 	if err := s.Err(); err != nil {
-		return nil, xerrors.Errorf("linelist: load: %w", err)
+		return nil, fmt.Errorf("linelist: load: %w", err)
 	}
 	return l, nil
 }
@@ -55,7 +54,7 @@ func (l List) WriteTo(w io.Writer) (n int64, err error) {
 	}
 	err = bw.Flush()
 	if err != nil {
-		err = xerrors.Errorf("linelist: write: %w", err)
+		err = fmt.Errorf("linelist: write: %w", err)
 	}
 	return n, err
 }

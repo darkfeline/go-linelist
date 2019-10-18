@@ -16,11 +16,10 @@ package linelist
 
 import (
 	"bufio"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-
-	"golang.org/x/xerrors"
 )
 
 // Store opens lists and tracks them so they can be written back.
@@ -71,7 +70,7 @@ func (s *Store) Open(path string) *List {
 	f, err := os.Open(path)
 	if err != nil {
 		if !os.IsNotExist(err) {
-			s.err = xerrors.Errorf("linelist: open %v: %w", path, err)
+			s.err = fmt.Errorf("linelist: open %v: %w", path, err)
 			return nil
 		}
 		var ls List
@@ -81,7 +80,7 @@ func (s *Store) Open(path string) *List {
 	defer f.Close()
 	ls, err := Load(f)
 	if err != nil {
-		s.err = xerrors.Errorf("linelist: open %v: %w", path, err)
+		s.err = fmt.Errorf("linelist: open %v: %w", path, err)
 		return nil
 	}
 	s.trackList(path, &ls)
@@ -119,13 +118,13 @@ func (s *Store) flushOne(t trackedList) error {
 	bw := bufio.NewWriter(f)
 	t.ls.WriteTo(bw)
 	if err := bw.Flush(); err != nil {
-		return xerrors.Errorf("linelist: flush list %v: %w", t.path, err)
+		return fmt.Errorf("linelist: flush list %v: %w", t.path, err)
 	}
 	if err := f.Close(); err != nil {
-		return xerrors.Errorf("linelist: flush list %v: %w", t.path, err)
+		return fmt.Errorf("linelist: flush list %v: %w", t.path, err)
 	}
 	if err := os.Rename(f.Name(), t.path); err != nil {
-		return xerrors.Errorf("linelist: flush list %v: %w", t.path, err)
+		return fmt.Errorf("linelist: flush list %v: %w", t.path, err)
 	}
 	return nil
 }
