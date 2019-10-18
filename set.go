@@ -36,3 +36,8 @@ func (s Set) Contains(l string) bool {
 func (s Set) Add(l string) {
 	s[l] = struct{}{}
 }
+
+// Remove removes a line from the set if it is present.
+func (s Set) Remove(l string) {
+	delete(s, l)
+}
